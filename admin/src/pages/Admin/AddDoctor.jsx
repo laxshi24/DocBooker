@@ -29,6 +29,7 @@ const AddDoctor = () => {
     try {
       
       if (!docImg) {
+        
         return toast.error('Image not selected')
         
       }
