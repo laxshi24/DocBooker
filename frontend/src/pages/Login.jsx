@@ -1,20 +1,59 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { AppContext } from '../context/AppContext';
+import {useNavigate} from 'react-router-dom'
+import axios from 'axios'
+import { toast } from 'react-toastify';
 
 const Login = () => {
+
+  const {backendUrl,token,setToken} =useContext(AppContext)
+
+  const navigate = useNavigate()
+
   const [state, setState] = useState('Sign Up'); // State to toggle between Sign Up and Login
   const [email, setEmail] = useState(''); // State for email
   const [password, setPassword] = useState(''); // State for password
   const [name, setName] = useState(''); // State for name
 
-  const onSubmitHandler = (event) => {
+  const onSubmitHandler = async (event) => {
     event.preventDefault();
-    // Add form submission logic here
-    if (state === 'Sign Up') {
-      console.log('Sign Up:', { name, email, password });
-    } else {
-      console.log('Login:', { email, password });
+    
+    try {
+
+      if (state === 'Sign Up') {
+        const {data} = await axios.post(backendUrl + '/api/user/register',{name,password,email})
+        if (data.success) {
+          localStorage.setItem('token',data.token)
+          setToken(data.token)
+        }else{
+          toast.error(data.message)
+        }
+        
+      } else{
+
+        const {data} = await axios.post(backendUrl + '/api/user/login',{password,email})
+        if (data.success) {
+          localStorage.setItem('token',data.token)
+          setToken(data.token)
+        }else{
+          toast.error(data.message)
+        }
+
+      }
+      
+    } catch (error) {
+      toast.error(error.message)
     }
+
+    
   };
+
+  useEffect(()=>{
+    if (token) {
+      navigate('/')
+    }
+
+  },[token])
 
   return (
     <form className="min-h-[80vh] flex items-center" onSubmit={onSubmitHandler}>
