@@ -226,4 +226,5 @@ const cancleAppointment = async (req,res) => {
 
 
 
+
 export {registerUser,loginUser,getProfile,updateProfile,bookAppointment,listAppointment,cancleAppointment}
